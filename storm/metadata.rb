@@ -4,7 +4,7 @@ maintainer_email "sean.mcnamara@webtrends.com"
 license          "All rights reserved"
 description      "Installs Twitter's Storm distributed computation system"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "1.0.30"
+version          "1.0.30-1"
 depends          "java"
 depends          "runit"
 supports         "ubuntu"

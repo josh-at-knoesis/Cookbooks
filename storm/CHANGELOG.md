@@ -1,3 +1,16 @@
+## 1.0.30-1
+* Moved debs directory into files/ubuntu for use with cookbook_file mechanism.
+* Configured cookbook_file mechanism to automate install of zeromq and jzmq.
+* Added role properties to enable storm clustering with custom role names.
+* Migrated node search space from 'node' to 'nodes' to avoid erroneous
+  search output which caused havoc in the storm.yaml file.
+* Changed to variable called nimbus_server, from storm-server.
+* Added an 'only_if' to fix .profile creation attempt happening before home 
+  directory creation.
+* Changed to .zip with a new URL to cope with present-day Storm official 
+  download offerings.
+* Tested on Chef 11.4.4 @ Ubutnu Cloud 12.04.2 LTS 64-bit @ OpenStack Folsom.
+
 ## 1.0.30
 * Changed supervisor control script which would prevent a supervisor from
   starting because worker processes were already running. It can happen

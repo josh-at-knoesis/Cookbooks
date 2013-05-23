@@ -23,25 +23,52 @@ if ENV["deploy_build"] == "true" then
   include_recipe "storm::undeploy-default"
 end
 
-# install dependency packages
-%w{unzip python zeromq jzmq}.each do |pkg|
+# install repo-based dependency packages
+%w{unzip python}.each do |pkg|
   package pkg do
     action :install
   end
 end
 
+# install cookbook_file-based dependency packages
+cookbook_file "zeromq_2.1.7-1_amd64.deb" do
+  path "/tmp/zeromq_2.1.7-1_amd64.deb"
+  owner "root"
+  group "root"
+  mode "0444"
+  action :create_if_missing
+end
+
+dpkg_package "zeromq" do
+  source "/tmp/zeromq_2.1.7-1_amd64.deb"
+  action :install
+end
+
+cookbook_file "jzmq_2.1.0-1_amd64.deb" do
+  path "/tmp/jzmq_2.1.0-1_amd64.deb"
+  owner "root"
+  group "root"
+  mode "0444"
+  action :create_if_missing
+end
+
+dpkg_package "jzmq" do
+  source "/tmp/jzmq_2.1.0-1_amd64.deb"
+  action :install
+end
+
 # find the Nimbus node.  optionally use cluster_role to allow for multiple clusters in the same environment
 if node['storm']['cluster_role']
-  storm_nimbus = search(:node, "role:storm_nimbus AND role:#{node['storm']['cluster_role']} AND chef_environment:#{node.chef_environment}").first
+  nimbus_server = search(:node, "roles:#{node['storm']['nimbus']['role']} AND roles:#{node['storm']['cluster_role']} AND chef_environment:#{node.chef_environment}").first
 else
-  storm_nimbus = search(:node, "role:storm_nimbus AND chef_environment:#{node.chef_environment}").first
+  nimbus_server = search(:node, "roles:#{node['storm']['nimbus']['role']} AND chef_environment:#{node.chef_environment}").first
 end
 
 
 # search for zookeeper servers
 zookeeper_quorum = Array.new
-search(:node, "role:zookeeper AND chef_environment:#{node.chef_environment}").each do |n|
-	zookeeper_quorum << n['fqdn']
+  search(:node, "roles:#{node['storm']['zookeeper']['role']} AND chef_environment:#{node.chef_environment}").each do |n|
+  zookeeper_quorum << n['fqdn']
 end
 
 install_dir = "#{node['storm']['install_dir']}/storm-#{node['storm']['version']}"
@@ -69,21 +96,21 @@ end
 end
 
 # download storm
-remote_file "#{Chef::Config[:file_cache_path]}/storm-#{node[:storm][:version]}.tar.gz" do
-  source "#{node['storm']['download_url']}/storm-#{node['storm']['version']}.tar.gz"
+remote_file "#{Chef::Config[:file_cache_path]}/storm-#{node[:storm][:version]}.zip" do
+  source "#{node['storm']['release_url']}/storm-#{node['storm']['version']}.zip"
   owner  "storm"
   group  "storm"
   mode   00744
-  not_if "test -f #{Chef::Config[:file_cache_path]}/storm-#{node['storm']['version']}.tar.gz"
+  not_if "test -f #{Chef::Config[:file_cache_path]}/storm-#{node['storm']['version']}.zip"
 end
 
-# uncompress the application tarball into the install directory
-execute "tar" do
+# uncompress the application zip file into the install directory
+execute "unzip" do
   user    "storm"
   group   "storm"
   creates "#{node['storm']['install_dir']}/storm-#{node['storm']['version']}"
   cwd     "#{node['storm']['install_dir']}"
-  command "tar zxvf #{Chef::Config[:file_cache_path]}/storm-#{node['storm']['version']}.tar.gz"
+  command "unzip #{Chef::Config[:file_cache_path]}/storm-#{node['storm']['version']}.zip"
 end
 
 # create a link from the specific version to a generic current folder
@@ -96,7 +123,7 @@ template "#{node['storm']['install_dir']}/storm-#{node['storm']['version']}/conf
   source "storm.yaml.erb"
   mode 00644
   variables(
-    :nimbus => storm_nimbus,
+    :nimbus_server => nimbus_server['fqdn'],
     :zookeeper_quorum => zookeeper_quorum
   )
 end
@@ -107,6 +134,7 @@ template "/home/storm/.profile" do
   group  "storm"
   source "profile.erb"
   mode   00644
+  only_if "test -f /home/storm"
   variables(
     :storm_dir => "#{node['storm']['install_dir']}/storm-#{node['storm']['version']}"
   )

@@ -10,6 +10,7 @@ default['storm']['version'] = "0.8.2"
 default['storm']['install_dir'] = "/opt/storm"
 default['storm']['log_dir'] = "/var/log/storm"
 default['storm']['cluster_role'] = nil
+default['storm']['release_url'] = "https://dl.dropbox.com/u/133901206"
 
 # general storm attributes
 default['storm']['java_lib_path'] = "/usr/local/lib:/opt/local/lib:/usr/lib"
@@ -23,6 +24,7 @@ default['storm']['zookeeper']['root'] = "/storm"
 default['storm']['zookeeper']['session_timeout'] = 20000
 default['storm']['zookeeper']['retry_times'] = 5
 default['storm']['zookeeper']['retry_interval'] = 1000
+default['storm']['zookeeper']['role'] = "zookeeper"
 
 # supervisor attributes
 default['storm']['supervisor']['workers'] = 4
@@ -32,6 +34,7 @@ default['storm']['supervisor']['worker_timeout_secs'] = 30
 default['storm']['supervisor']['monitor_frequecy_secs'] = 3
 default['storm']['supervisor']['heartbeat_frequency_secs'] = 5
 default['storm']['supervisor']['enable'] = true
+default['storm']['supervisor']['role'] = "storm-supervisor"
 
 # worker attributes
 default['storm']['worker']['childopts'] = "-Xmx1280m -XX:+UseConcMarkSweepGC -Dcom.sun.management.jmxremote"
@@ -53,6 +56,7 @@ default['storm']['nimbus']['inbox_jar_expiration_secs'] = 3600
 default['storm']['nimbus']['task_launch_secs'] = 120
 default['storm']['nimbus']['reassign'] = true
 default['storm']['nimbus']['file_copy_expiration_secs'] = 600
+default['storm']['nimbus']['role'] = "storm-nimbus"
 
 # ui attributes
 default['storm']['ui']['port'] = 8080

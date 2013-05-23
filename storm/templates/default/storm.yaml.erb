@@ -45,7 +45,7 @@ zmq.linger.millis: <%= node[:storm][:zmq][:longer_millis] %>
 
 
 ### nimbus.* configs are for the master
-nimbus.host: "<%= @nimbus[:fqdn] %>"
+nimbus.host: "<%= @nimbus_server %>"
 nimbus.thrift.port: <%= node[:storm][:nimbus][:thrift_port] %>
 nimbus.childopts: "<%= node[:storm][:nimbus][:childopts] %>"
 nimbus.task.timeout.secs: <%= node[:storm][:nimbus][:task_timeout_secs] %>
@@ -97,5 +97,3 @@ topology.state.synchronization.timeout.secs: <%= node[:storm][:topology][:state_
 topology.stats.sample.rate: <%= node[:storm][:topology][:stats_sample_rate] %>
 topology.fall.back.on.java.serialization: <%= node[:storm][:topology][:fall_back_on_java_serialization] %>
 topology.worker.childopts: <%= node[:storm][:topology][:worker_childopts] %>
-
-
