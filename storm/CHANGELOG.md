@@ -2,7 +2,7 @@
 * Moved debs directory into files/ubuntu for use with cookbook_file mechanism.
 * Configured cookbook_file mechanism to automate install of zeromq and jzmq.
 * Added role properties to enable storm clustering with custom role names.
-* Migrated node search space from 'node' to 'nodes' to avoid erroneous
+* Migrated node search space from 'role' to 'roles' to avoid erroneous
   search output which caused havoc in the storm.yaml file.
 * Changed to variable called nimbus_server, from storm-server.
 * Added an 'only_if' to fix .profile creation attempt happening before home 
